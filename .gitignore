@@ -15,6 +15,7 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
+../AdvancedLab/Mini-Project1-Base-main/.idea
 *.iws
 *.iml
 *.ipr
