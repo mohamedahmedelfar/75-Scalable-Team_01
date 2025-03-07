@@ -12,8 +12,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/cart")
 public class CartController {
-//The Dependency Injection Variables
-//The Constructor with the requried variables mapping the Dependency Injection.
 
     private final CartService cartService;
 

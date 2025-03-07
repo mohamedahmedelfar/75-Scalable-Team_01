@@ -8,10 +8,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
-@SuppressWarnings("rawtypes")
 public class CartService extends MainService<Cart>{
-//The Dependency Injection Variables
-//The Constructor with the requried variables mapping the Dependency Injection.
 
     private final CartRepository cartRepository;
 
@@ -36,11 +33,25 @@ public class CartService extends MainService<Cart>{
     }
 
     public void addProductToCart(UUID cartId, Product product) {
-        cartRepository.addProductToCart(cartId, product);
+        ArrayList<Cart> carts = getCarts();
+        for (Cart cart : carts) {
+            if (cart.getId().equals(cartId)) {
+                cart.getProducts().add(product);
+                cartRepository.save(cart);
+                return;
+            }
+        }
     }
 
     public void deleteProductFromCart(UUID cartId, Product product) {
-        cartRepository.deleteProductFromCart(cartId, product);
+        ArrayList<Cart> carts = getCarts();
+        for (Cart cart : carts) {
+            if (cart.getId().equals(cartId)) {
+                cart.getProducts().remove(product);
+                cartRepository.save(cart);
+                return;
+            }
+        }
     }
 
     public void deleteCartById(UUID cartId) {
