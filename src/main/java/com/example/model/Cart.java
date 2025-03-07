@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import com.example.model.Product;
+
 
 @Component
 public class Cart {
@@ -27,7 +29,7 @@ public class Cart {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -35,12 +37,12 @@ public class Cart {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
     public ArrayList<Product> getProducts() {
-        return products;
+        return (ArrayList<Product>) products;
     }
 
     public void setProducts(ArrayList<Product> products) {
