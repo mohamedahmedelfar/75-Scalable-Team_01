@@ -20,6 +20,9 @@ public class CartRepository extends MainRepository<Cart> {
     public Cart getCartById(UUID cartId) {
         return getCarts().stream().filter(cart -> cart.getId().equals(cartId)).findFirst().orElse(null);
     }
+    public Cart getCartById(UUID cartId){
+        return getCarts().stream().filter(cart -> cart.getId().equals(cartId)).findFirst().orElse(null);
+    }
     public Cart getCartByUserId(UUID userId) {
         return getCarts().stream().filter(cart -> cart.getUserId().equals(userId)).findFirst().orElse(null);
     }
