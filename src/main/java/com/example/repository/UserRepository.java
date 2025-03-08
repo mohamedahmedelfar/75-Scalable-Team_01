@@ -86,13 +86,8 @@ public class UserRepository extends MainRepository<User>{
 
     public void deleteUserById(UUID userId){
         ArrayList<User> users = findAll();
-        User user1 = null;
-        for (User user : users) {
-            if (user.getUserId().equals(userId)){
-                users.remove(user1);
-                saveAll(users);
-            }
-        }
+        users.removeIf(user -> user.getUserId().equals(userId)); // Safe removal
+        saveAll(users);
     }
 
 }    
