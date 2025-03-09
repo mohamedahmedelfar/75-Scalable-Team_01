@@ -14,7 +14,7 @@ public class User {
     private List<Order> orders = new ArrayList<>();
  
     public User(){
-
+        this.id = UUID.randomUUID();
     }
 
     public String getName() {
@@ -25,12 +25,20 @@ public class User {
         this.name = name;
     }
 
-    public UUID getUserId(){
+    public UUID getId(){
         return this.id;
+    }
+
+    public void setId(UUID newId){
+        this.id=newId;
     }
 
     public List<Order> getOrders(){
         return this.orders;
+    }
+
+    public void setOrders(List<Order> newOrders){
+        this.orders = newOrders;
     }
 
     public String getUserName(){
@@ -42,7 +50,7 @@ public class User {
     }
 
     public void removeOrder(UUID orderId){
-        orders.remove(orderId);
+        orders.removeIf(order -> order.getId().equals(orderId));
     }
 
 }

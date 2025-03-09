@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.model.Order;
@@ -38,7 +40,7 @@ public class UserController {
     public User getUserById(@PathVariable UUID userId){
         return userService.getUserById(userId);
     }
-    /* 
+    
     @GetMapping("/{userId}/orders")
     public List<Order> getOrdersByUserId(@PathVariable UUID userId){
         return userService.getOrdersByUserId(userId);
@@ -46,25 +48,16 @@ public class UserController {
 
     @PostMapping("/{userId}/removeOrder")
     public String removeOrderFromUser(@PathVariable UUID userId, @RequestParam UUID orderId){
-    
+        userService.removeOrderFromUser(userId, orderId);
+        return "Order removed from User";
     }
 
     @DeleteMapping("/{userId}/emptyCart")
     public String emptyCart(@PathVariable UUID userId){
+        userService.emptyCart(userId);
+        return "Cleared cart";
     
     }
-
-    @PutMapping("/addProductToCart")
-    public String addProductToCart(@RequestParam UUID userId, @RequestParam UUID productId){
-    
-    }
-
-    @PutMapping("/deleteProductFromCart")
-    public String deleteProductFromCart(@RequestParam UUID userId, @RequestParam UUID productId){
-
-    }
-
-    */
 
     @PostMapping("/{userId}/checkout")
     public String addOrderToUser(@PathVariable UUID userId){

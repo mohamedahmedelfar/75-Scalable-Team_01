@@ -14,8 +14,11 @@ public class Order {
     private List<Product> products = new ArrayList<>();
 
     // Constructors
-    public Order() {
-        this.id = UUID.randomUUID();
+    public Order(UUID id, UUID userId, double totalPrice, List<Product> products) {
+        this.id = id;
+        this.totalPrice=totalPrice;
+        this.userId=userId;
+        this.products=products;
     }
 
     public Order(UUID userId, List<Product> products, double totalPrice) {

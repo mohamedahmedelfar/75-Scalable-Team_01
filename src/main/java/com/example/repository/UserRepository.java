@@ -38,7 +38,7 @@ public class UserRepository extends MainRepository<User>{
     public User getUserById(UUID userId){
         ArrayList<User> users = findAll();
         for (User user : users) {
-            if (user.getUserId().equals(userId)) {
+            if (user.getId().equals(userId)) {
                 return user; // Return the user if the ID matches
             }
         }
@@ -53,7 +53,7 @@ public class UserRepository extends MainRepository<User>{
     public List<Order> getOrdersByUserId(UUID userId){
         ArrayList<User> users = findAll();
         for (User user : users) {
-            if (user.getUserId().equals(userId)) {
+            if (user.getId().equals(userId)) {
                 return user.getOrders();
             }
         }
@@ -63,7 +63,7 @@ public class UserRepository extends MainRepository<User>{
     public void addOrderToUser(UUID userId, Order order){
         ArrayList<User> users = findAll();
         for (User user : users) {
-            if (user.getUserId().equals(userId)){
+            if (user.getId().equals(userId)){
                     user.addOrder(order);
             }
         }
@@ -73,7 +73,7 @@ public class UserRepository extends MainRepository<User>{
     public void removeOrderFromUser(UUID userId, UUID orderId){
         ArrayList<User> users = findAll();
         for (User user : users) {
-            if (user.getUserId().equals(userId)){
+            if (user.getId().equals(userId)){
                 List<Order> orders = user.getOrders();
                 for(Order order : orders){
                     if(order.getId().equals(orderId)){
@@ -86,13 +86,8 @@ public class UserRepository extends MainRepository<User>{
 
     public void deleteUserById(UUID userId){
         ArrayList<User> users = findAll();
-        User user1 = null;
-        for (User user : users) {
-            if (user.getUserId().equals(userId)){
-                users.remove(user1);
-                saveAll(users);
-            }
-        }
+        users.removeIf(user -> user.getId().equals(userId));
+        saveAll(users);
     }
 
 }
