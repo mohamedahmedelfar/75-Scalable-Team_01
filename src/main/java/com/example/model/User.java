@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class User {
 
     private UUID id;
-    private String name;
+    private String userName;
     private List<Order> orders = new ArrayList<>();
  
     public User(){
@@ -18,11 +18,11 @@ public class User {
     }
 
     public String getName() {
-        return name;
+        return this.userName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.userName = name;
     }
 
     public UUID getId(){
@@ -42,7 +42,7 @@ public class User {
     }
 
     public String getUserName(){
-        return this.name;
+        return this.userName;
     }
 
     public void addOrder(Order newOrder){

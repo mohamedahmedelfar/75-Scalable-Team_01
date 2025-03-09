@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.model.Product;
 import com.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -35,21 +36,39 @@ public class ProductController {
 
     @PutMapping("/update/{productId}")
     public Product updateProduct(@PathVariable UUID productId, @RequestBody Map<String,Object> body){
-        String newName = (String) body.get("name");
-        double newPrice = Double.parseDouble(body.get("price").toString());
+        if(body==null){
+            return null;
+        }
+        if (!body.containsKey("name") || !body.containsKey("price")) {
+            return null;
+        }
+        double newPrice;
+        Object priceObject = body.get("price");
+        if (priceObject instanceof Number) {
+            newPrice = ((Number) priceObject).doubleValue();
+        } else if (priceObject instanceof String) {
+            try {
+                newPrice = Double.parseDouble((String) priceObject);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+        String newName = body.get("name").toString();
         return productService.updateProduct(productId, newName, newPrice);
     }
 
     @PutMapping("/applyDiscount")
     public String applyDiscount(@RequestParam double discount,@RequestBody ArrayList<UUID> productIds){
         productService.applyDiscount(discount,productIds);
-        return "success";
+        return "Discount applied successfully";
     }
 
     @DeleteMapping("/delete/{productId}")
     public String deleteProductById(@PathVariable UUID productId){
         productService.deleteProductById(productId);
-        return "success";
+        return "Product deleted successfully";
     }
 
 

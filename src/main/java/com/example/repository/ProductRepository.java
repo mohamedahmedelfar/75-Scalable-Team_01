@@ -40,6 +40,9 @@ public class ProductRepository extends MainRepository<Product> {
 
     public Product updateProduct(UUID productId, String newName, double newPrice) {
         Product productFound = getProductById(productId);
+        if (productFound == null) {
+            throw new IllegalArgumentException("Product with ID " + productId + " not found");
+        }
         productFound.setName(newName);
         productFound.setPrice(newPrice);
         ArrayList<Product> products = findAll();

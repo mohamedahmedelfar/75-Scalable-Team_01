@@ -35,6 +35,9 @@ public class UserRepository extends MainRepository<User>{
 
     public User getUserById(UUID userId){
         ArrayList<User> users = findAll();
+        if(users==null) {
+            return null;
+        }
         for (User user : users) {
             if (user.getId().equals(userId)) {
                 return user; // Return the user if the ID matches
@@ -44,12 +47,18 @@ public class UserRepository extends MainRepository<User>{
     }
 
     public User addUser(User user){
+        if(user==null) {
+            return null;
+        }
         save(user);
         return user;
     }
 
     public List<Order> getOrdersByUserId(UUID userId){
         ArrayList<User> users = findAll();
+        if(users==null) {
+            return null;
+        }
         for (User user : users) {
             if (user.getId().equals(userId)) {
                 return user.getOrders();
@@ -60,6 +69,9 @@ public class UserRepository extends MainRepository<User>{
 
     public void addOrderToUser(UUID userId, Order order){
         ArrayList<User> users = findAll();
+        if(users==null) {
+            return;
+        }
         for (User user : users) {
             if (user.getId().equals(userId)){
                     user.addOrder(order);
@@ -70,20 +82,24 @@ public class UserRepository extends MainRepository<User>{
 
     public void removeOrderFromUser(UUID userId, UUID orderId){
         ArrayList<User> users = findAll();
+        if(users==null) {
+            return;
+        }
         for (User user : users) {
             if (user.getId().equals(userId)){
                 List<Order> orders = user.getOrders();
-                for(Order order : orders){
-                    if(order.getId().equals(orderId)){
-                        user.removeOrder(orderId);
-                    }
-                }
+                orders.removeIf(order -> order.getId().equals(orderId));
+                save(user);
+                return;
             }
         }
     }
 
     public void deleteUserById(UUID userId){
         ArrayList<User> users = findAll();
+        if(users==null) {
+            return;
+        }
         users.removeIf(user -> user.getId().equals(userId));
         saveAll(users);
     }

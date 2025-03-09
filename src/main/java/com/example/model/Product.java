@@ -28,13 +28,13 @@ public class Product {
 
 
     public UUID getId() {
-        return id;
+        return this.id;
     }
     public void setId(UUID id) {
         this.id = id;
     }
     public String getName() {
-        return name;
+        return this.name;
     }
     public void setName(String name) {
         this.name = name;

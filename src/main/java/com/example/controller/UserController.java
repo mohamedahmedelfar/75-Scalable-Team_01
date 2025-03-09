@@ -49,27 +49,27 @@ public class UserController {
     @PostMapping("/{userId}/removeOrder")
     public String removeOrderFromUser(@PathVariable UUID userId, @RequestParam UUID orderId){
         userService.removeOrderFromUser(userId, orderId);
-        return "Order removed from User";
+        return "Order removed successfully";
     }
 
     @DeleteMapping("/{userId}/emptyCart")
     public String emptyCart(@PathVariable UUID userId){
         userService.emptyCart(userId);
-        return "Cleared cart";
+        return "Cart emptied successfully";
     
     }
 
     @PostMapping("/{userId}/checkout")
     public String addOrderToUser(@PathVariable UUID userId){
         userService.addOrderToUser(userId);
-        return "Order added";
+        return "Order added successfully";
     }
 
     
     @DeleteMapping("/delete/{userId}")
     public String deleteUserById(@PathVariable UUID userId){
         userService.deleteUserById(userId);
-        return "User deleted";
+        return "User not found";
     }
 
 

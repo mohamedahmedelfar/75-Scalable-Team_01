@@ -45,7 +45,7 @@ public class Cart {
     }
 
     public void setProducts(List<Product> products) {
-        this.products = products;
+        this.products = new ArrayList<>(products);
     }
 
     public String toString(){
