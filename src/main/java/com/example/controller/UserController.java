@@ -69,7 +69,10 @@ public class UserController {
     @DeleteMapping("/delete/{userId}")
     public String deleteUserById(@PathVariable UUID userId){
         userService.deleteUserById(userId);
-        return "User not found";
+        if(userService.getUserById(userId) == null){
+            return "User not found";
+        }
+        return "User deleted successfully";
     }
 
 

@@ -45,8 +45,8 @@ public class ProductRepository extends MainRepository<Product> {
         }
         productFound.setName(newName);
         productFound.setPrice(newPrice);
-        ArrayList<Product> products = findAll();
-        saveAll(products);
+        System.out.println(productFound.getPrice());
+        save(productFound);
         return productFound;
     }
     public void applyDiscount(double discount, ArrayList<UUID> productIds) {
@@ -55,7 +55,9 @@ public class ProductRepository extends MainRepository<Product> {
             if (product != null) {
                 double currentPrice = product.getPrice();
                 double discountedPrice = currentPrice * (1 - (discount / 100));
-                updateProduct(productId, product.getName(), discountedPrice);
+                System.out.println(discountedPrice);
+                Product updated = updateProduct(productId, product.getName(), discountedPrice);
+                System.out.println(updated.getPrice());
             }
         }
     }

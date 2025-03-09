@@ -17,6 +17,8 @@ public class UserRepository extends MainRepository<User>{
 
     }
 
+    boolean userFound=false;
+
     @Override
     protected String getDataPath() {
         return "src/main/java/com/example/data/users.json";
@@ -100,8 +102,16 @@ public class UserRepository extends MainRepository<User>{
         if(users==null) {
             return;
         }
+        for (User user : users) {
+            if (user.getId().equals(userId)){
+                userFound=true;
+            }
+        }
+        if(!userFound) {
+            return;
+        }
         users.removeIf(user -> user.getId().equals(userId));
-        saveAll(users);
+        //saveAll(users);
     }
 
 }
