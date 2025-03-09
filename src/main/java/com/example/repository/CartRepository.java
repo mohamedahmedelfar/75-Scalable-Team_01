@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @Repository
-public abstract class CartRepository extends MainRepository<Cart> {
+@SuppressWarnings("rawtypes")
+public class CartRepository extends MainRepository<Cart> {
     @Override
     protected String getDataPath() {
         return "";
@@ -33,8 +34,18 @@ public abstract class CartRepository extends MainRepository<Cart> {
     public Cart getCartByUserId(UUID userId) {
         return getCarts().stream().filter(cart -> cart.getUserId().equals(userId)).findFirst().orElse(null);
     }
-    public abstract void addProductToCart(UUID cartId, Product product);
-    public abstract void deleteProductFromCart(UUID cartId, Product product);
+    public void addProductToCart(UUID cartId, Product product){
+        Cart cart = getCartById(cartId);
+        if(cart != null){
+            cart.getProducts().add(product);
+        }
+    }
+    public void deleteProductFromCart(UUID cartId, Product product){
+        Cart cart = getCartById(cartId);
+        if(cart != null){
+            cart.getProducts().remove(product);
+        }
+    }
     public void deleteCartById(UUID cartId) {
         ArrayList<Cart> carts = getCarts();
         carts.removeIf(cart -> cart.getId().equals(cartId));
