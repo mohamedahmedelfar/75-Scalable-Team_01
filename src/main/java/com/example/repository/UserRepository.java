@@ -76,7 +76,7 @@ public class UserRepository extends MainRepository<User>{
             if (user.getUserId().equals(userId)){
                 List<Order> orders = user.getOrders();
                 for(Order order : orders){
-                    if(order.getOrderId().equals(orderId)){
+                    if(order.getId().equals(orderId)){
                         user.removeOrder(orderId);
                     }
                 }
