@@ -19,14 +19,12 @@ public class UserRepository extends MainRepository<User>{
 
     @Override
     protected String getDataPath() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDataPath'");
+        return "src/main/java/com/example/data/users.json";
     }
 
     @Override
     protected Class<User[]> getArrayType() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getArrayType'");
+        return User[].class;
     }
 
 

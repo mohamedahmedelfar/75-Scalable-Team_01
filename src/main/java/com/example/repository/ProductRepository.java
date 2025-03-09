@@ -13,7 +13,7 @@ public class ProductRepository extends MainRepository<Product> {
 
     @Override
     protected String getDataPath() {
-        return "data/products.json";
+        return "src/main/java/com/example/data/products.json";
     }
 
     @Override
