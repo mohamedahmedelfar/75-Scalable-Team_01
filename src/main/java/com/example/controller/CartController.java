@@ -34,17 +34,6 @@ public class CartController {
         return cartService.getCartById(cartId);
     }
 
-    @PutMapping("/addProduct/{cartId}")
-    public String addProductToCart(@PathVariable UUID cartId, @RequestBody Product product) {
-        cartService.addProductToCart(cartId, product);
-        return "Product added successfully";
-    }
-
-    @PutMapping("/deleteProduct/{cartId}")
-    public String deleteProductFromCart(@PathVariable UUID cartId, @RequestBody Product product) {
-        cartService.deleteProductFromCart(cartId, product);
-        return "Product removed successfully";
-    }
 
     @DeleteMapping("/delete/{cartId}")
     public String deleteCartById(@PathVariable UUID cartId) {
