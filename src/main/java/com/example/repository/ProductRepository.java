@@ -4,6 +4,7 @@ import com.example.model.Product;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,18 +47,21 @@ public class ProductRepository extends MainRepository<Product> {
         productFound.setName(newName);
         productFound.setPrice(newPrice);
         System.out.println(productFound.getPrice());
-        save(productFound);
+        this.save(productFound);
         return productFound;
     }
     public void applyDiscount(double discount, ArrayList<UUID> productIds) {
+        ArrayList<Product> updatedProducts = new ArrayList<>();
         for (UUID productId : productIds) {
             Product product = getProductById(productId);
             if (product != null) {
                 double currentPrice = product.getPrice();
                 double discountedPrice = currentPrice * (1 - (discount / 100));
-                System.out.println(discountedPrice);
-                Product updated = updateProduct(productId, product.getName(), discountedPrice);
-                System.out.println(updated.getPrice());
+                System.out.println(product.getPrice());
+                product.setPrice(discountedPrice);
+                updatedProducts.add(product);
+                this.saveAll(updatedProducts);
+                System.out.println(product.getPrice());
             }
         }
     }
