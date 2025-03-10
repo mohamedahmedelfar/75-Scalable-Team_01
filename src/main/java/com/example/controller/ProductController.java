@@ -35,15 +35,27 @@ public class ProductController {
     }
 
     @PutMapping("/update/{productId}")
-    public Product updateProduct(@PathVariable UUID productId, @RequestBody Map<String,Object> body){
-        if(body==null){
+    public Product updateProduct(@PathVariable UUID productId, @RequestBody(required = false) Map<String,Object> body){
+        Product product = productService.getProductById(productId);
+        if(product == null){
+            System.out.println("Product not found");
             return null;
         }
-        if (!body.containsKey("name") || !body.containsKey("price")) {
+        if(body==null|| body.isEmpty()){
+            System.out.println("body is null");
+            return null;
+        }
+        System.out.println("Received body: " + body);
+        if(body.get("newName")==null){
+            System.out.println("name is null");
+            return null;
+        }
+        if(body.get("newPrice")==null){
+            System.out.println("price is null");
             return null;
         }
         double newPrice;
-        Object priceObject = body.get("price");
+        Object priceObject = body.get("newPrice");
         if (priceObject instanceof Number) {
             newPrice = ((Number) priceObject).doubleValue();
         } else if (priceObject instanceof String) {
@@ -55,7 +67,7 @@ public class ProductController {
         } else {
             return null;
         }
-        String newName = body.get("name").toString();
+        String newName = body.get("newName").toString();
         return productService.updateProduct(productId, newName, newPrice);
     }
 
