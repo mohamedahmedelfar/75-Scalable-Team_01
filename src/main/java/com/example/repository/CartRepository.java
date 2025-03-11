@@ -32,8 +32,20 @@ public class CartRepository extends MainRepository<Cart> {
         return getCarts().stream().filter(cart -> cart.getId().equals(cartId)).findFirst().orElse(null);
     }
     public Cart getCartByUserId(UUID userId) {
-        return getCarts().stream().filter(cart -> cart.getUserId().equals(userId)).findFirst().orElse(null);
+        System.out.println("Looking for cart with userId: " + userId);
+        System.out.println("All stored carts: " + getCarts()); // Debugging line
+
+        for (Cart cart : getCarts()) {
+            System.out.println("Checking cart: " + cart);
+            if (cart.getUserId().equals(userId)) {
+                System.out.println("Cart found: " + cart);
+                return cart;
+            }
+        }
+        System.out.println("No cart found for userId: " + userId);
+        return null;
     }
+
     public void addProductToCart(UUID cartId, Product product){
         Cart cart = getCartById(cartId);
         if(cart != null){

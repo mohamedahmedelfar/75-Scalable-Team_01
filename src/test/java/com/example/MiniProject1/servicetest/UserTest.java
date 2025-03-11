@@ -512,6 +512,53 @@ class UserTest {
         assertNull(retrievedOrders, "Expected null for a non-existent user.");
         //assertTrue(retrievedOrders.isEmpty(), "Expected empty list for non-existent user.");
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @Test
+//    public void testEmptyCart() {
+//        UUID userId = UUID.randomUUID();
+//
+//        // Step 1: Create a cart with products and add it to the cart service
+//        Cart cart = new Cart(userId, new ArrayList<>(List.of(new Product("Item1", 10.0), new Product("Item2", 15.0))));
+//        cartService.getCarts().add(cart);  // Manually adding the cart
+//
+//        System.out.println("Cart added: " + cart);
+//        System.out.println("Cart service contents: " + cartService.getCarts());
+//
+//        // Step 2: Check that the cart exists before emptying it
+//        Cart fetchedCart = cartService.getCartByUserId(userId);
+//        System.out.println("Before calling emptyCart:");
+//        System.out.println("Cart exists: " + (fetchedCart != null));
+//        System.out.println("Cart products count: " + (fetchedCart != null ? fetchedCart.getProducts().size() : 0));
+//
+//        // Step 3: Call emptyCart
+//        userService.emptyCart(userId);
+//
+//        // Step 4: Check if the cart is emptied
+//        Cart afterEmptyCart = cartService.getCartByUserId(userId);
+//        System.out.println("After calling emptyCart:");
+//        System.out.println("Cart exists: " + (afterEmptyCart != null));
+//        System.out.println("Cart products count: " + (afterEmptyCart != null ? afterEmptyCart.getProducts().size() : 0));
+//
+//        // Step 5: Assert
+//        assertNotNull(afterEmptyCart, "Cart should still exist after emptying.");
+//        assertTrue(afterEmptyCart.getProducts().isEmpty(), "Cart should be empty after calling emptyCart.");
+//    }
+
+
+
 }
 
 

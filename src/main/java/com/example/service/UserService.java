@@ -66,6 +66,7 @@ public class UserService extends MainService<User> {
         cart.getProducts().clear();
         cartService.getCarts().remove(cart);
         cartService.getCarts().add(cart);
+
     }
 
     public void addOrderToUser(UUID userId){

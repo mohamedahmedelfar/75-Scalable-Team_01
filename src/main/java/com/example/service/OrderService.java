@@ -21,6 +21,9 @@ public class OrderService extends MainService<Order> {
     }
 
     public void addOrder(Order order) {
+        if (order.getTotalPrice() < 0) {
+            throw new IllegalStateException("Cannot place an order with a negative price value");
+        }
         orderRepository.addOrder(order);
     }
 
@@ -33,6 +36,12 @@ public class OrderService extends MainService<Order> {
     }
 
     public void deleteOrderById(UUID orderId) {
+
+        if (orderId == null) {
+            throw new IllegalArgumentException("Cannot search for null Id");
+
+        }
+
         orderRepository.deleteOrderById(orderId);
     }
 }

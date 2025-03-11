@@ -1,0 +1,35 @@
+version: '3.8'
+
+x-variables:  # Define variables
+  First_Name: "mohamed"
+  Last_Name: "elfar"
+  ID: "52_17435"
+  DB_NAME: "mohamed_52_17435"
+  SERVER_PORT: "8090"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "1234"
+      POSTGRES_DB: "${DB_NAME}"
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    container_name: springboot_app
+    depends_on:
+      - postgres
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      SPRING_APPLICATION_NAME: Task_2
+      SERVER_PORT: "${SERVER_PORT}"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${DB_NAME}"
+      SPRING_DATASOURCE_USERNAME: "postgres"
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: "create-drop"
