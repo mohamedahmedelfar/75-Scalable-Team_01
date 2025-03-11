@@ -19,6 +19,15 @@ public class CartService extends MainService<Cart>{
     }
 
     public Cart addCart(Cart cart) {
+        if (cart == null) {
+            throw new IllegalArgumentException("Cart cannot be null");
+        }
+        if (cart.getUserId() == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        if (cartRepository.getCartById(cart.getId()) != null) {
+            throw new IllegalArgumentException("Cart with this ID already exists");
+        }
         return cartRepository.addCart(cart);
     }
 
