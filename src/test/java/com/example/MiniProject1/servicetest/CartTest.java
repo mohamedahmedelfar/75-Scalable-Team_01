@@ -520,4 +520,108 @@ class CartTest {
         assertEquals(50.0, updatedCart.getProducts().get(1).getPrice(), "Second product price should match");
     }
 
+    @Test
+    void testDeleteProductFromCartSuccessfullyRemovesProduct() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+        UUID cartId = cart.getId();
+
+        Product product = new Product("Laptop", 1200.0);
+        cartService.addProductToCart(cartId, product);
+
+        // Act
+        cartService.deleteProductFromCart(cartId, product);
+        Cart updatedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNotNull(updatedCart, "Cart should not be null after deleting a product");
+        assertEquals(0, updatedCart.getProducts().size(), "Cart should be empty after product removal");
+    }
+
+    @Test
+    void testDeleteProductFromCartFailsForNonexistentCart() {
+        // Arrange
+        UUID nonExistentCartId = UUID.randomUUID();
+        Product product = new Product("Smartphone", 800.0);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            cartService.deleteProductFromCart(nonExistentCartId, product);
+        });
+
+        assertEquals("Cart not found!", exception.getMessage(), "Exception message should indicate missing cart");
+    }
+
+    @Test
+    void testDeleteProductFromCartFailsForNonexistentProduct() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+        UUID cartId = cart.getId();
+
+        Product productInCart = new Product("Laptop", 1200.0);
+        cartService.addProductToCart(cartId, productInCart);
+        Product productNotInCart = new Product("Tablet", 600.0);
+
+        // Act
+        cartService.deleteProductFromCart(cartId, productNotInCart);
+        Cart updatedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNotNull(updatedCart, "Cart should not be null after trying to remove a non-existent product");
+        assertEquals(1, updatedCart.getProducts().size(), "Cart should remain with 1 product");
+    }
+
+    @Test
+    void testDeleteCartByIdSuccessfullyRemovesCart() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+        UUID cartId = cart.getId();
+
+        // Act
+        cartService.deleteCartById(cartId);
+        Cart retrievedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNull(retrievedCart, "Cart should be removed successfully");
+    }
+
+    @Test
+    void testDeleteCartByIdFailsForNonexistentCart() {
+        // Arrange
+        UUID nonExistentCartId = UUID.randomUUID(); // Generate a random cart ID
+
+        // Act & Assert (No Exception Should Be Thrown)
+        assertDoesNotThrow(() -> cartService.deleteCartById(nonExistentCartId),
+                "Deleting a non-existent cart should not throw an exception");
+    }
+
+    @Test
+    void testDeleteCartByIdReducesCartCount() {
+        // Arrange
+        UUID userId1 = UUID.randomUUID();
+        UUID userId2 = UUID.randomUUID();
+
+        Cart cart1 = new Cart(userId1, new ArrayList<>());
+        Cart cart2 = new Cart(userId2, new ArrayList<>());
+
+        cartService.addCart(cart1);
+        cartService.addCart(cart2);
+
+        int initialCartCount = cartService.getCarts().size();
+        UUID cartIdToDelete = cart1.getId();
+
+        // Act
+        cartService.deleteCartById(cartIdToDelete);
+        int newCartCount = cartService.getCarts().size();
+
+        // Assert
+        assertEquals(initialCartCount - 1, newCartCount, "Cart count should decrease after deletion");
+    }
+
 }

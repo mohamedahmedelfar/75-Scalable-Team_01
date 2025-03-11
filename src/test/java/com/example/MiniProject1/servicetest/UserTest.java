@@ -394,6 +394,124 @@ class UserTest
         assertNull(user, "Expected an Id, cannot be null.");
     }
 
+    @Test
+    void testGetOrdersByUserIdReturnsCorrectOrders() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        List<Order> orders = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
+        orders.add(new Order(UUID.randomUUID(), products, 100.0));
+        orders.add(new Order(UUID.randomUUID(), products, 200.0));
+
+        User user = new User(userId, "John Doe", orders);
+        userService.addUser(user); // Assume addUser correctly stores the user
+
+        // Act
+        List<Order> retrievedOrders = userService.getOrdersByUserId(userId);
+
+        // Assert
+        assertNotNull(retrievedOrders, "Orders list should not be null");
+        assertEquals(2, retrievedOrders.size(), "User should have exactly 2 orders");
+        assertEquals(100, retrievedOrders.get(0).getTotalPrice(), "First order total price should match");
+        assertEquals(200, retrievedOrders.get(1).getTotalPrice(), "Second order total price should match");
+    }
+
+    @Test
+    void testGetOrdersByUserIdReturnsNullForNonexistentUser() {
+        // Arrange
+        UUID nonExistentUserId = UUID.randomUUID(); // Generate a random user ID
+
+        // Act
+        List<Order> retrievedOrders = userService.getOrdersByUserId(nonExistentUserId);
+
+        // Assert
+        assertNull(retrievedOrders, "Should return null for a non-existent user");
+    }
+
+    @Test
+    void testGetOrdersByUserIdReturnsEmptyListForUserWithNoOrders() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        User user = new User(userId, "Alice", new ArrayList<>()); // No orders
+        userService.addUser(user);
+
+        // Act
+        List<Order> retrievedOrders = userService.getOrdersByUserId(userId);
+
+        // Assert
+        assertNotNull(retrievedOrders, "Orders list should not be null");
+        assertEquals(0, retrievedOrders.size(), "Orders list should be empty for a user with no orders");
+    }
+
+    @Test
+    void testEmptyCartSuccessfullyClearsProducts() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cart.getProducts().add(new Product("Laptop", 1200.0));
+        cart.getProducts().add(new Product("Mouse", 50.0));
+
+        cartService.addCart(cart);
+
+        // Act
+        userService.emptyCart(userId);
+        Cart updatedCart = cartService.getCartByUserId(userId);
+
+        // Assert
+        assertNotNull(updatedCart, "Cart should still exist after emptying");
+        assertEquals(0, updatedCart.getProducts().size(), "Cart should have no products after emptying");
+    }
+
+    @Test
+    void testEmptyCartDoesNothingForEmptyCart() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>()); // Already empty
+        cartService.addCart(cart);
+
+        // Act
+        userService.emptyCart(userId);
+        Cart updatedCart = cartService.getCartByUserId(userId);
+
+        // Assert
+        assertNotNull(updatedCart, "Cart should still exist after trying to empty");
+        assertEquals(0, updatedCart.getProducts().size(), "Cart should remain empty");
+    }
+
+    @Test
+    void testEmptyCartDoesNothingForNonexistentCart() {
+        // Arrange
+        UUID nonExistentUserId = UUID.randomUUID(); // User with no cart
+
+        // Act & Assert (No Exception Should Be Thrown)
+        assertDoesNotThrow(() -> userService.emptyCart(nonExistentUserId),
+                "Emptying a non-existent cart should not throw an exception");
+    }
+
+
+    @Test
+    void testAddOrderToUserSuccessfullyCreatesOrder() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cart.getProducts().add(new Product("Laptop", 1200.0));
+        cart.getProducts().add(new Product("Mouse", 50.0));
+
+        cartService.addCart(cart);
+
+        // Act
+        userService.addOrderToUser(userId);
+        Order lastOrder = userService.getOrdersByUserId(userId).getFirst();
+        Cart updatedCart = cartService.getCartByUserId(userId);
+
+        // Assert
+        assertNotNull(lastOrder, "Order should be created successfully");
+        assertEquals(1250.0, lastOrder.getTotalPrice(), "Total price should be correctly calculated");
+        assertEquals(2, lastOrder.getProducts().size(), "Order should contain 2 products");
+        assertEquals(0, updatedCart.getProducts().size(), "Cart should be empty after placing order");
+    }
+
+
 
     @Test
     void testDeleteExistingUser() {
