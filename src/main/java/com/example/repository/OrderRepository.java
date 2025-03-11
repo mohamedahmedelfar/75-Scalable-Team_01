@@ -38,7 +38,18 @@ public class OrderRepository extends MainRepository<Order> {
     }
 
     public void deleteOrderById(UUID orderId) {
-        List<Order> orders = getOrders();
-        orders.removeIf(order -> order.getId().equals(orderId));
+        ArrayList<Order> orders = getOrders();
+        int index = 0;
+        boolean found = false;
+        for(Order order : orders) {
+            if(order.getId().equals(orderId)) {
+                found = true;
+                break;
+            }
+            index++;
+        }
+        if(found)
+            orders.remove(index);
+        saveAll(orders);
     }
 }

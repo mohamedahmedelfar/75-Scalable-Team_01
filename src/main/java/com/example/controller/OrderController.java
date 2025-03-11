@@ -36,10 +36,11 @@ public class OrderController {
 
     @DeleteMapping("/delete/{orderId}")
     public String deleteOrderById(@PathVariable UUID orderId) {
-        orderService.deleteOrderById(orderId);
+
         if(orderService.getOrderById(orderId) == null){
             return "Order not found";
         }
+        orderService.deleteOrderById(orderId);
         return "Order deleted successfully";
     }
 }
