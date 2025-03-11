@@ -303,7 +303,7 @@ class CartTest {
     void testGetCartsWhenNoCartsExist() {
         List<Cart> carts = cartService.getCarts();
 
-        assertTrue(carts.isEmpty(), "Expected an empty list when no users exist.");
+        assertTrue(carts.isEmpty(), "Expected an empty list when no carts exist.");
 
 
     }
@@ -329,23 +329,302 @@ class CartTest {
         assertTrue(carts.contains(cart1) && carts.contains(cart2), "Both carts should be in the list.");
     }
 
-    //This test ensures that multiple carts can exist for the same user but with different cart IDs.
     @Test
-    void testGetCartsWithSameUserId() {
+    void testGetCartsMaintainsCartData() {
         // Arrange
         UUID userId = UUID.randomUUID();
-        Cart cart1 = new Cart(UUID.randomUUID(), userId, new ArrayList<>()); // Unique cart ID, same user
-        Cart cart2 = new Cart(UUID.randomUUID(), userId, new ArrayList<>()); // Another unique cart ID, same user
+        List<Product> products = new ArrayList<>();
+        products.add(new Product("TestProduct", 25.0));
+
+        Cart cart = new Cart(userId, new ArrayList<>(products));
+        cartService.addCart(cart);
+
+        // Act
+        List<Cart> carts = cartService.getCarts();
+        Cart retrievedCart = carts.stream()
+                .filter(c -> c.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        // Assert
+        assertNotNull(retrievedCart, "Retrieved cart should not be null");
+        assertEquals(userId, retrievedCart.getUserId(), "User ID should match");
+        assertEquals(products.size(), retrievedCart.getProducts().size(), "Product list size should match");
+        assertEquals("TestProduct", retrievedCart.getProducts().get(0).getName(), "Product name should match");
+    }
+
+    @Test
+    void testGetCartByIdReturnsCorrectCart() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+
+        UUID cartId = cart.getId(); // Retrieve the assigned UUID
+
+        // Act
+        Cart retrievedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNotNull(retrievedCart, "Cart should be found");
+        assertEquals(cartId, retrievedCart.getId(), "Cart ID should match");
+        assertEquals(userId, retrievedCart.getUserId(), "User ID should match");
+    }
+
+    @Test
+    void testGetCartByIdReturnsNullForNonexistentCart() {
+        // Arrange
+        UUID nonExistentCartId = UUID.randomUUID(); // Generate a random cart ID
+
+        // Act
+        Cart retrievedCart = cartService.getCartById(nonExistentCartId);
+
+        // Assert
+        assertNull(retrievedCart, "Should return null for a non-existent cart");
+    }
+
+    @Test
+    void testGetCartByIdHandlesMultipleCarts() {
+        // Arrange
+        UUID userId1 = UUID.randomUUID();
+        UUID userId2 = UUID.randomUUID();
+
+        Cart cart1 = new Cart(userId1, new ArrayList<>());
+        Cart cart2 = new Cart(userId2, new ArrayList<>());
+
+        cartService.addCart(cart1);
+        cartService.addCart(cart2);
+
+        UUID cartId1 = cart1.getId();
+        UUID cartId2 = cart2.getId();
+
+        // Act
+        Cart retrievedCart1 = cartService.getCartById(cartId1);
+        Cart retrievedCart2 = cartService.getCartById(cartId2);
+
+        // Assert
+        assertNotNull(retrievedCart1, "First cart should be found");
+        assertNotNull(retrievedCart2, "Second cart should be found");
+
+        assertEquals(cartId1, retrievedCart1.getId(), "First cart ID should match");
+        assertEquals(cartId2, retrievedCart2.getId(), "Second cart ID should match");
+    }
+
+    @Test
+    void testGetCartByUserIdReturnsCorrectCart() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+
+        // Act
+        Cart retrievedCart = cartService.getCartByUserId(userId);
+
+        // Assert
+        assertNotNull(retrievedCart, "Cart should be found");
+        assertEquals(userId, retrievedCart.getUserId(), "User ID should match");
+    }
+
+    @Test
+    void testGetCartByUserIdReturnsNullForNonexistentUser() {
+        // Arrange
+        UUID nonExistentUserId = UUID.randomUUID(); // Generate a random user ID
+
+        // Act
+        Cart retrievedCart = cartService.getCartByUserId(nonExistentUserId);
+
+        // Assert
+        assertNull(retrievedCart, "Should return null for a non-existent user");
+    }
+
+    @Test
+    void testGetCartByUserIdHandlesMultipleCarts() {
+        // Arrange
+        UUID userId1 = UUID.randomUUID();
+        UUID userId2 = UUID.randomUUID();
+
+        Cart cart1 = new Cart(userId1, new ArrayList<>());
+        Cart cart2 = new Cart(userId2, new ArrayList<>());
 
         cartService.addCart(cart1);
         cartService.addCart(cart2);
 
         // Act
-        List<Cart> carts = cartService.getCarts();
+        Cart retrievedCart1 = cartService.getCartByUserId(userId1);
+        Cart retrievedCart2 = cartService.getCartByUserId(userId2);
 
         // Assert
-        long count = carts.stream().filter(cart -> cart.getUserId().equals(userId)).count();
-        assertEquals(2, count, "A user should be able to have multiple carts with different IDs");
+        assertNotNull(retrievedCart1, "First user's cart should be found");
+        assertNotNull(retrievedCart2, "Second user's cart should be found");
+
+        assertEquals(userId1, retrievedCart1.getUserId(), "First user's cart should match user ID");
+        assertEquals(userId2, retrievedCart2.getUserId(), "Second user's cart should match user ID");
+    }
+
+    @Test
+    void testAddProductToCartSuccessfullyAddsProduct() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+        UUID cartId = cart.getId();
+
+        Product product = new Product("Laptop", 1200.0);
+
+        // Act
+        cartService.addProductToCart(cartId, product);
+        Cart updatedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNotNull(updatedCart, "Cart should not be null after adding a product");
+        assertEquals(1, updatedCart.getProducts().size(), "Cart should contain one product");
+        assertEquals("Laptop", updatedCart.getProducts().get(0).getName(), "Product name should match");
+        assertEquals(1200.0, updatedCart.getProducts().get(0).getPrice(), "Product price should match");
+    }
+
+    @Test
+    void testAddProductToCartFailsForNonexistentCart() {
+        // Arrange
+        UUID nonExistentCartId = UUID.randomUUID();
+        Product product = new Product("Smartphone", 800.0);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            cartService.addProductToCart(nonExistentCartId, product);
+        });
+
+        assertEquals("Cart not found!", exception.getMessage(), "Exception message should indicate missing cart");
+    }
+
+    @Test
+    void testAddMultipleProductsToCart() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+        UUID cartId = cart.getId();
+
+        Product product1 = new Product("Headphones", 150.0);
+        Product product2 = new Product("Mouse", 50.0);
+
+        // Act
+        cartService.addProductToCart(cartId, product1);
+        cartService.addProductToCart(cartId, product2);
+        Cart updatedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNotNull(updatedCart, "Cart should not be null after adding multiple products");
+        assertEquals(2, updatedCart.getProducts().size(), "Cart should contain two products");
+
+        assertEquals("Headphones", updatedCart.getProducts().get(0).getName(), "First product name should match");
+        assertEquals(150.0, updatedCart.getProducts().get(0).getPrice(), "First product price should match");
+
+        assertEquals("Mouse", updatedCart.getProducts().get(1).getName(), "Second product name should match");
+        assertEquals(50.0, updatedCart.getProducts().get(1).getPrice(), "Second product price should match");
+    }
+
+    @Test
+    void testDeleteProductFromCartSuccessfullyRemovesProduct() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+        UUID cartId = cart.getId();
+
+        Product product = new Product("Laptop", 1200.0);
+        cartService.addProductToCart(cartId, product);
+
+        // Act
+        cartService.deleteProductFromCart(cartId, product);
+        Cart updatedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNotNull(updatedCart, "Cart should not be null after deleting a product");
+        assertEquals(0, updatedCart.getProducts().size(), "Cart should be empty after product removal");
+    }
+
+    @Test
+    void testDeleteProductFromCartFailsForNonexistentCart() {
+        // Arrange
+        UUID nonExistentCartId = UUID.randomUUID();
+        Product product = new Product("Smartphone", 800.0);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            cartService.deleteProductFromCart(nonExistentCartId, product);
+        });
+
+        assertEquals("Cart not found!", exception.getMessage(), "Exception message should indicate missing cart");
+    }
+
+    @Test
+    void testDeleteProductFromCartFailsForNonexistentProduct() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+        UUID cartId = cart.getId();
+
+        Product productInCart = new Product("Laptop", 1200.0);
+        cartService.addProductToCart(cartId, productInCart);
+        Product productNotInCart = new Product("Tablet", 600.0);
+
+        // Act
+        cartService.deleteProductFromCart(cartId, productNotInCart);
+        Cart updatedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNotNull(updatedCart, "Cart should not be null after trying to remove a non-existent product");
+        assertEquals(1, updatedCart.getProducts().size(), "Cart should remain with 1 product");
+    }
+
+    @Test
+    void testDeleteCartByIdSuccessfullyRemovesCart() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart = new Cart(userId, new ArrayList<>());
+        cartService.addCart(cart);
+        UUID cartId = cart.getId();
+
+        // Act
+        cartService.deleteCartById(cartId);
+        Cart retrievedCart = cartService.getCartById(cartId);
+
+        // Assert
+        assertNull(retrievedCart, "Cart should be removed successfully");
+    }
+
+    @Test
+    void testDeleteCartByIdFailsForNonexistentCart() {
+        // Arrange
+        UUID nonExistentCartId = UUID.randomUUID(); // Generate a random cart ID
+
+        // Act & Assert (No Exception Should Be Thrown)
+        assertDoesNotThrow(() -> cartService.deleteCartById(nonExistentCartId),
+                "Deleting a non-existent cart should not throw an exception");
+    }
+
+    @Test
+    void testDeleteCartByIdReducesCartCount() {
+        // Arrange
+        UUID userId1 = UUID.randomUUID();
+        UUID userId2 = UUID.randomUUID();
+
+        Cart cart1 = new Cart(userId1, new ArrayList<>());
+        Cart cart2 = new Cart(userId2, new ArrayList<>());
+
+        cartService.addCart(cart1);
+        cartService.addCart(cart2);
+
+        int initialCartCount = cartService.getCarts().size();
+        UUID cartIdToDelete = cart1.getId();
+
+        // Act
+        cartService.deleteCartById(cartIdToDelete);
+        int newCartCount = cartService.getCarts().size();
+
+        // Assert
+        assertEquals(initialCartCount - 1, newCartCount, "Cart count should decrease after deletion");
     }
 
 }

@@ -4,6 +4,7 @@ import com.example.model.Cart;
 import com.example.model.Product;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 @Repository
@@ -50,12 +51,24 @@ public class CartRepository extends MainRepository<Cart> {
         Cart cart = getCartById(cartId);
         if(cart != null){
             cart.getProducts().add(product);
+            deleteCartById(cartId);
+            addCart(cart);
         }
     }
     public void deleteProductFromCart(UUID cartId, Product product){
         Cart cart = getCartById(cartId);
         if(cart != null){
-            cart.getProducts().remove(product);
+            ArrayList<Product> products = cart.getProducts();
+            int index=0;
+            for(Product tempProduct:products){
+                if (tempProduct.getId().equals(product.getId())){
+                    products.remove(index);
+                    break;
+                }
+                index++;
+            }
+            deleteCartById(cartId);
+            addCart(cart);
         }
     }
     public void deleteCartById(UUID cartId) {

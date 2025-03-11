@@ -53,7 +53,7 @@ public class UserService extends MainService<User> {
     public User getUserById(UUID userId){
         return userRepository.getUserById(userId);
     }
-
+    //test
     public List<Order> getOrdersByUserId(UUID userId){
         return userRepository.getOrdersByUserId(userId);
     }
@@ -63,10 +63,9 @@ public class UserService extends MainService<User> {
         if (cart == null || cart.getProducts().isEmpty()) {
             return;
         }
-        cart.getProducts().clear();
-        cartService.getCarts().remove(cart);
-        cartService.getCarts().add(cart);
-
+        cartService.deleteCartById(cart.getId());
+        cart = new Cart(cart.getId(), userId, new ArrayList<Product>());
+        cartService.addCart(cart);
     }
 
     public void addOrderToUser(UUID userId){
@@ -79,21 +78,23 @@ public class UserService extends MainService<User> {
         for(Product product:products){
             totalPrice+= product.getPrice();
         }
-    
         Order newOrder = new Order(userId,products,totalPrice);
-        orderService.addOrder(newOrder);
-        userRepository.addOrderToUser(userId, newOrder);
+//        orderService.addOrder(newOrder);
+//        userRepository.addOrderToUser(userId, newOrder);
+        User user = getUserById(userId);
+        user.addOrder(newOrder);
+        deleteUserById(userId);
+        addUser(user);
         emptyCart(userId);
     }
 
     public void removeOrderFromUser(UUID userId, UUID orderId){
         userRepository.removeOrderFromUser(userId, orderId);
     }
-
+    // tested
     public void deleteUserById(UUID userId){
         if (userId == null) {
             throw new IllegalArgumentException("Cannot search for null Id");
-
         }
          userRepository.deleteUserById(userId);
     }

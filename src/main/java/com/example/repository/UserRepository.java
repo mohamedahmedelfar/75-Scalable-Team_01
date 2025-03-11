@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.service.OrderService;
 import org.springframework.stereotype.Repository;
 
 import com.example.model.Order;
@@ -79,6 +80,7 @@ public class UserRepository extends MainRepository<User>{
                     user.addOrder(order);
                     deleteUserById(userId);
                     addUser(user);
+                    break;
             }
         }
 
@@ -92,8 +94,21 @@ public class UserRepository extends MainRepository<User>{
         for (User user : users) {
             if (user.getId().equals(userId)){
                 List<Order> orders = user.getOrders();
-                orders.removeIf(order -> order.getId().equals(orderId));
-                save(user);
+                int index = 0;
+                boolean found = false;
+                for (Order order : orders){
+                    if(order.getId().equals(orderId)){
+                        found = true;
+                        break;
+                    }
+                    index++;
+                }
+                User user1 = getUserById(userId);
+                if(found)
+                    user1.getOrders().remove(index);
+                deleteUserById(userId);
+                addUser(user1);
+                //save(user);
                 return;
             }
         }

@@ -28,6 +28,9 @@ public class CartService extends MainService<Cart>{
         if (cartRepository.getCartById(cart.getId()) != null) {
             throw new IllegalArgumentException("Cart with this ID already exists");
         }
+        if (cartRepository.getCartByUserId(cart.getUserId()) != null) {
+            throw new IllegalArgumentException("Cart with this user ID already exists");
+        }
         return cartRepository.addCart(cart);
     }
 
@@ -44,25 +47,15 @@ public class CartService extends MainService<Cart>{
     }
 
     public void addProductToCart(UUID cartId, Product product) {
-        ArrayList<Cart> carts = getCarts();
-        for (Cart cart : carts) {
-            if (cart.getId().equals(cartId)) {
-                cart.getProducts().add(product);
-                cartRepository.save(cart);
-                return;
-            }
-        }
+        if(getCartById(cartId)==null)
+            throw new RuntimeException("Cart not found!");
+        cartRepository.addProductToCart(cartId,product);
     }
 
     public void deleteProductFromCart(UUID cartId, Product product) {
-        ArrayList<Cart> carts = getCarts();
-        for (Cart cart : carts) {
-            if (cart.getId().equals(cartId)) {
-                cart.getProducts().remove(product);
-                cartRepository.save(cart);
-                return;
-            }
-        }
+        if(getCartById(cartId)==null)
+            throw new RuntimeException("Cart not found!");
+        cartRepository.deleteProductFromCart(cartId, product);
     }
 
     public void deleteCartById(UUID cartId) {
