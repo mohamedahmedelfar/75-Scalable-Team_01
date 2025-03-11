@@ -29,8 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ComponentScan(basePackages = "com.example.*")
 @WebMvcTest
-class UserTest
-{
+class UserTest {
     @Value("${spring.application.userDataPath}")
     private String userDataPath;
     @Value("${spring.application.productDataPath}")
@@ -238,8 +237,6 @@ class UserTest
     }
 
 
-
-
     // --------------------------------- User Tests -------------------------
     @Test
     void testAddUserService() throws Exception {
@@ -262,9 +259,6 @@ class UserTest
         assertTrue(found, "User should be added correctly in the service");
     }
 
-
-
-
     @Test
     void testAddUserWithNullIdService() throws Exception {
         User testUser = new User();
@@ -279,6 +273,7 @@ class UserTest
                 "Expected exception message does not match");
 
     }
+
     @Test
     void testAddUserWithNoNameService() throws Exception {
         User testUser = new User();
@@ -323,8 +318,6 @@ class UserTest
         assertEquals("Test User Two", users.get(1).getName());
     }
 
-
-
     @Test
     void testGetUsersImmutability() {
         // Create sample users
@@ -339,7 +332,6 @@ class UserTest
         userService.addUser(user2);
 
 
-
         List<User> users = userService.getUsers();
         users.remove(user1);
 
@@ -348,17 +340,6 @@ class UserTest
         assertEquals("Test User", users.get(0).getName());
         assertEquals("Test User Two", users.get(1).getName());
     }
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     void testGetUsersWithExistingId() {
@@ -374,6 +355,7 @@ class UserTest
 
         assertEquals("Test User", user.getName(), "Expected user name in the list.");
     }
+
     @Test
     void testGetUsersWithNonExistingId() {
         // Create sample users
@@ -437,14 +419,100 @@ class UserTest
     }
 
 
+    @Test
+    void testGetOrdersByUserId_ValidUserWithMultipleOrders() {
+
+        UUID userId = UUID.randomUUID();
+        List<Product> products = new ArrayList<>();
+        Order order1 = new Order(UUID.randomUUID(), userId, 100.0, products);
+        Order order2 = new Order(UUID.randomUUID(), userId, 150.0, products);
+
+        User user = new User(userId, "John Doe", new ArrayList<>());
+        userService.addUser(user);
+
+        userRepository.addOrderToUser(userId, order1);
+        userRepository.addOrderToUser(userId, order2);
+
+        // Verify the user was added successfully
+        List<User> users = userService.getUsers();
+        System.out.println("Users in repository: " + users);
+
+        assertNotNull(users, "Users list should not be null.");
+        assertFalse(users.isEmpty(), "Users list should not be empty.");
+
+        assertTrue(users.contains(user), "User should be in the repository.");
+
+        System.out.println("Orders for user before retrieval: " + user.getOrders());
 
 
+        // Act
+        List<Order> retrievedOrders = userService.getOrdersByUserId(userId);
+
+        // Assert
+        assertNotNull(retrievedOrders, "Orders should not be null for a valid user.");
+        assertEquals(2, retrievedOrders.size(), "Expected two orders in the list.");
+        assertTrue(retrievedOrders.contains(order1), "Order list should contain the first order.");
+        assertTrue(retrievedOrders.contains(order2), "Order list should contain the second order.");
+    }
 
 
+    @Test
+    void testGetOrdersByUserId_UserWithNoOrders() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        User user = new User(userId, "Alice Smith", new ArrayList<>());
+        userService.addUser(user); // Add user without orders
+
+        // Verify user is stored but has no orders
+        List<User> users = userService.getUsers();
+        System.out.println("Users in repository: " + users);
+
+        assertNotNull(users, "Users list should not be null.");
+        assertFalse(users.isEmpty(), "Users list should not be empty.");
+        assertTrue(users.contains(user), "User should be in the repository.");
+
+        System.out.println("Orders for user before retrieval: " + user.getOrders());
+
+        // Act
+        List<Order> retrievedOrders = userService.getOrdersByUserId(userId);
+
+        // Assert
+        assertNotNull(retrievedOrders, "Orders should not be null even if user has no orders.");
+        assertTrue(retrievedOrders.isEmpty(), "Expected empty list for user with no orders.");
+    }
+
+
+    @Test
+    void testGetOrdersByUserId_NonExistentUserAfterAddingValidUser() {
+        // Arrange
+        UUID existingUserId = UUID.randomUUID();
+        UUID nonExistentUserId = UUID.randomUUID(); // A different user ID that does not exist
+
+        List<Product> products = new ArrayList<>();
+        Order order1 = new Order(UUID.randomUUID(), existingUserId, 100.0, products);
+        Order order2 = new Order(UUID.randomUUID(), existingUserId, 200.0, products);
+
+        User validUser = new User(existingUserId, "Alice Doe", new ArrayList<>());
+        userService.addUser(validUser);
+
+        userRepository.addOrderToUser(existingUserId, order1);
+        userRepository.addOrderToUser(existingUserId, order2);
+
+        // Verify that orders were correctly assigned to the valid user
+        List<Order> userOrders = userService.getOrdersByUserId(existingUserId);
+        System.out.println("Orders for existing user: " + userOrders);
+
+        assertNotNull(userOrders, "Orders for the existing user should not be null.");
+        assertEquals(2, userOrders.size(), "Expected two orders for the valid user.");
+
+        // Act - Try fetching orders for a non-existent user
+        List<Order> retrievedOrders = userService.getOrdersByUserId(nonExistentUserId);
+
+        // Assert
+        assertNull(retrievedOrders, "Expected null for a non-existent user.");
+        //assertTrue(retrievedOrders.isEmpty(), "Expected empty list for non-existent user.");
+    }
 }
-
-
-
 
 
 

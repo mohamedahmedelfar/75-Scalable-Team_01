@@ -77,6 +77,8 @@ public class UserRepository extends MainRepository<User>{
         for (User user : users) {
             if (user.getId().equals(userId)){
                     user.addOrder(order);
+                    deleteUserById(userId);
+                    addUser(user);
             }
         }
 

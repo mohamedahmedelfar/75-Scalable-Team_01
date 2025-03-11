@@ -2,6 +2,7 @@ package com.example.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -59,5 +60,19 @@ public class User {
     public void removeOrder(UUID orderId){
         orders.removeIf(order -> order.getId().equals(orderId));
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        User user = (User) obj;
+        return Objects.equals(id, user.id); // Compare by UUID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 
 }
