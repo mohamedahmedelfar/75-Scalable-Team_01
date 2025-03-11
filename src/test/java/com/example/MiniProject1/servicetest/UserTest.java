@@ -493,6 +493,8 @@ class UserTest
     void testAddOrderToUserSuccessfullyCreatesOrder() {
         // Arrange
         UUID userId = UUID.randomUUID();
+        User user = new User(userId, "test", new ArrayList<>());
+        addUser(user);
         Cart cart = new Cart(userId, new ArrayList<>());
         cart.getProducts().add(new Product("Laptop", 1200.0));
         cart.getProducts().add(new Product("Mouse", 50.0));
@@ -511,6 +513,51 @@ class UserTest
         assertEquals(0, updatedCart.getProducts().size(), "Cart should be empty after placing order");
     }
 
+    @Test
+    void testAddOrderToUserThrowsExceptionForEmptyCart() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        User user = new User(userId, "test", new ArrayList<>());
+        addUser(user);
+        Cart cart = new Cart(userId, new ArrayList<>()); // Empty cart
+        cartService.addCart(cart);
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            userService.addOrderToUser(userId);
+        });
+
+        assertEquals("Cannot place an order with an empty cart", exception.getMessage(),
+                "Exception message should indicate that cart cannot be empty");
+    }
+
+    @Test
+    void testAddOrderToUserHandlesMultipleOrders() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        User user = new User(userId, "test", new ArrayList<>());
+        addUser(user);
+        Cart cart = new Cart(userId, new ArrayList<>());
+
+        cart.getProducts().add(new Product("Phone", 800.0));
+        cart.getProducts().add(new Product("Charger", 50.0));
+
+        cartService.addCart(cart);
+        userService.addOrderToUser(userId); // First order
+//        List<Product> products = new ArrayList<Product>();
+//        products.add(new Product("Headphones", 200.0));
+//        cart.setProducts(products);
+        cartService.addProductToCart(cart.getId(),new Product("Headphones", 200.0) );
+        userService.addOrderToUser(userId); // Second order
+
+        // Act
+        List<Order> userOrders = userService.getOrdersByUserId(userId);
+
+        // Assert
+        assertEquals(2, userOrders.size(), "User should have two orders placed");
+        assertEquals(850.0, userOrders.get(0).getTotalPrice(), "First order total should be correct");
+        assertEquals(200.0, userOrders.get(1).getTotalPrice(), "Second order total should be correct");
+    }
 
 
     @Test

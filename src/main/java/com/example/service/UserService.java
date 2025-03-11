@@ -79,10 +79,14 @@ public class UserService extends MainService<User> {
         for(Product product:products){
             totalPrice+= product.getPrice();
         }
-    
         Order newOrder = new Order(userId,products,totalPrice);
-        orderService.addOrder(newOrder);
-        userRepository.addOrderToUser(userId, newOrder);
+//        orderService.addOrder(newOrder);
+//        userRepository.addOrderToUser(userId, newOrder);
+        User user = getUserById(userId);
+        System.out.println("ABX"+user.getId().equals(userId));
+        user.addOrder(newOrder);
+        deleteUserById(userId);
+        addUser(user);
         emptyCart(userId);
     }
 
@@ -93,7 +97,6 @@ public class UserService extends MainService<User> {
     public void deleteUserById(UUID userId){
         if (userId == null) {
             throw new IllegalArgumentException("Cannot search for null Id");
-
         }
          userRepository.deleteUserById(userId);
     }
