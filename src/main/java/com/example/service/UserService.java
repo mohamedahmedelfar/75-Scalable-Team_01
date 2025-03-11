@@ -33,6 +33,13 @@ public class UserService extends MainService<User> {
 
     
     public User addUser(User user){
+        if (user.getName() == null) {
+            throw new IllegalArgumentException("User name cannot be null");
+        }
+
+        if (user.getName().matches(".*\\d.*")) {
+            throw new IllegalArgumentException("User name cannot contain numbers");
+        }
         return userRepository.addUser(user);
     } 
 
