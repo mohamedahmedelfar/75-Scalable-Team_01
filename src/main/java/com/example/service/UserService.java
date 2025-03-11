@@ -66,7 +66,6 @@ public class UserService extends MainService<User> {
         cartService.deleteCartById(cart.getId());
         cart = new Cart(cart.getId(), userId, new ArrayList<Product>());
         cartService.addCart(cart);
-        System.out.println(cart.getUserId().equals(userId));
     }
 
     public void addOrderToUser(UUID userId){
@@ -83,7 +82,6 @@ public class UserService extends MainService<User> {
 //        orderService.addOrder(newOrder);
 //        userRepository.addOrderToUser(userId, newOrder);
         User user = getUserById(userId);
-        System.out.println("ABX"+user.getId().equals(userId));
         user.addOrder(newOrder);
         deleteUserById(userId);
         addUser(user);

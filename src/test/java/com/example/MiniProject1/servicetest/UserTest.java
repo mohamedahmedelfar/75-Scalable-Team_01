@@ -559,6 +559,46 @@ class UserTest
         assertEquals(200.0, userOrders.get(1).getTotalPrice(), "Second order total should be correct");
     }
 
+    @Test
+    void testRemoveOrderFromUserSuccessfullyRemovesOrder() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+
+        Order order = new Order(orderId, userId, 500.0, new ArrayList<>());
+        List<Order> orders = new ArrayList<>();
+        orders.add(order);
+
+        User user = new User(userId, "John Doe", orders);
+        userService.addUser(user);
+
+        // Act
+        userService.removeOrderFromUser(userId, orderId);
+        User updatedUser = userService.getUserById(userId);
+
+        // Assert
+        assertNotNull(updatedUser, "User should still exist after order removal");
+        assertEquals(0, updatedUser.getOrders().size(), "User should have no orders after order removal");
+    }
+
+    @Test
+    void testRemoveOrderFromUserDoesNothingForNonexistentOrder() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID(); // Order that does not exist
+
+        User user = new User(userId, "Alice", new ArrayList<>()); // User has no orders
+        userService.addUser(user);
+
+        // Act
+        userService.removeOrderFromUser(userId, orderId);
+        User updatedUser = userService.getUserById(userId);
+
+        // Assert
+        assertNotNull(updatedUser, "User should still exist");
+        assertEquals(0, updatedUser.getOrders().size(), "User should still have no orders");
+    }
+
 
     @Test
     void testDeleteExistingUser() {
