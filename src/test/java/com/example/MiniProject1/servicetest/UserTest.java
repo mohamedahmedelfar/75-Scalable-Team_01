@@ -3,17 +3,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import com.example.repository.*;
 import com.example.service.OrderService;
 import com.example.service.ProductService;
 import com.example.service.UserService;
-import com.fasterxml.jackson.databind.ser.std.UUIDSerializer;
-import org.springframework.http.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +17,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.example.model.Cart;
 import com.example.model.Order;
 import com.example.model.Product;
 import com.example.model.User;
 import com.example.repository.CartRepository;
 import com.example.service.CartService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ComponentScan(basePackages = "com.example.*")
 @WebMvcTest
@@ -303,6 +293,95 @@ class UserTest
                 "Expected exception message does not match");
     }
 
+    @Test
+    void testGetUsersWhenEmpty() {
+        // Mock repository to return an empty list
+        //when(userRepository.getUsers()).thenReturn(new ArrayList<>());
+
+        List<User> users = userService.getUsers();
+
+        assertTrue(users.isEmpty(), "Expected an empty list when no users exist.");
+    }
+
+    @Test
+    void testGetUsersWithMultipleUsers() {
+        // Create sample users
+        User user1 = new User();
+        User user2 = new User();
+        user1.setId(UUID.randomUUID());
+        user2.setId(UUID.randomUUID());
+        user1.setName("Test User");
+        user2.setName("Test User Two");
+
+        userService.addUser(user1);
+        userService.addUser(user2);
+
+        //List<User> userList = Arrays.asList(user1, user2);
+
+        // Mock repository behavior
+        //when(userRepository.getUsers()).thenReturn(new ArrayList<>(userList));
+
+        List<User> users = userService.getUsers();
+
+        assertEquals(2, users.size(), "Expected two users in the list.");
+        assertEquals("Test User", users.get(0).getName());
+        assertEquals("Test User Two", users.get(1).getName());
+    }
+
+
+
+    @Test
+    void testGetUsersImmutability() {
+        // Create sample users
+        User user1 = new User();
+        User user2 = new User();
+        user1.setId(UUID.randomUUID());
+        user2.setId(UUID.randomUUID());
+        user1.setName("Test User");
+        user2.setName("Test User Two");
+
+        userService.addUser(user1);
+        userService.addUser(user2);
+
+
+
+        List<User> users = userService.getUsers();
+        users.remove(user1);
+
+
+        assertEquals(2, users.size(), "Expected two users in the list.");
+        assertEquals("Test User", users.get(0).getName());
+        assertEquals("Test User Two", users.get(1).getName());
+    }
+
+
+
+
+
+
+//    @Test
+//    void testGetUsersImmutability() {
+//        // Create sample user
+//        User user1 = new User();
+//
+//
+//        List<User> userList = new ArrayList<>();
+//        userList.add(user1);
+//
+//        // Mock repository behavior
+//        when(userRepository.getUsers()).thenReturn(new ArrayList<>(userList));
+//
+//        List<User> users = userService.getUsers();
+//
+//        // Try modifying the returned list
+//        users.add(new User(2, "David"));
+//
+//        // Fetch users again to verify the repository remains unchanged
+//        List<User> usersAfterModification = userService.getUsers();
+//
+//        assertEquals(1, usersAfterModification.size(), "Modifying the returned list should not affect the repository.");
+//        assertEquals("Charlie", usersAfterModification.get(0).getName());
+//    }
 
 
 
