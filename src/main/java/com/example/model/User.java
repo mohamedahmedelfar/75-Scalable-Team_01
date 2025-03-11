@@ -10,19 +10,30 @@ import org.springframework.stereotype.Component;
 public class User {
 
     private UUID id;
-    private String userName;
+    private String name;
     private List<Order> orders = new ArrayList<>();
  
     public User(){
         this.id = UUID.randomUUID();
     }
 
+    public User(UUID id, String name, List<Order> orders){
+        this.id = id;
+        this.name = name;
+        this.orders = orders;
+    }
+
+    public User(String name, List<Order> orders){
+        this.name = name;
+        this.orders = orders;
+    }
+
     public String getName() {
-        return this.userName;
+        return this.name;
     }
 
     public void setName(String name) {
-        this.userName = name;
+        this.name = name;
     }
 
     public UUID getId(){
@@ -39,10 +50,6 @@ public class User {
 
     public void setOrders(List<Order> newOrders){
         this.orders = newOrders;
-    }
-
-    public String getUserName(){
-        return this.userName;
     }
 
     public void addOrder(Order newOrder){

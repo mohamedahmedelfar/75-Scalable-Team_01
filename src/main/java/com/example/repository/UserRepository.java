@@ -100,17 +100,21 @@ public class UserRepository extends MainRepository<User>{
     public void deleteUserById(UUID userId){
         ArrayList<User> users = findAll();
         if(users==null) {
+            System.out.println("no users found");
             return;
         }
+        User tempUser = null;
         for (User user : users) {
             if (user.getId().equals(userId)){
                 userFound=true;
+                tempUser=user;
             }
         }
         if(!userFound) {
+            System.out.println("no user with this id found");
             return;
         }
-        users.remove(getUserById(userId));
+        users.remove(tempUser);
         saveAll(users);
     }
 
