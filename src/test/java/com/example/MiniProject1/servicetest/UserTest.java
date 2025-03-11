@@ -335,10 +335,12 @@ class UserTest {
         List<User> users = userService.getUsers();
         users.remove(user1);
 
+        List<User> usersAfterRemoval = userService.getUsers();
 
-        assertEquals(2, users.size(), "Expected two users in the list.");
-        assertEquals("Test User", users.get(0).getName());
-        assertEquals("Test User Two", users.get(1).getName());
+
+        assertEquals(2, usersAfterRemoval.size(), "Expected two users in the list.");
+        assertEquals("Test User", usersAfterRemoval.get(0).getName());
+        assertEquals("Test User Two", usersAfterRemoval.get(1).getName());
     }
 
     @Test
