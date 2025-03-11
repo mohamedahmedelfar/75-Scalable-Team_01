@@ -3,6 +3,7 @@ package com.example.model;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -51,4 +52,18 @@ public class Cart {
     public String toString(){
         return "Cart id: "+this.id+" User id: "+this.userId+" Products: "+this.products;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Cart cart = (Cart) obj;
+        return id.equals(cart.id) && userId.equals(cart.userId) && products.equals(cart.products);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userId, products);
+    }
+
 }
