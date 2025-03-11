@@ -316,11 +316,6 @@ class UserTest
         userService.addUser(user1);
         userService.addUser(user2);
 
-        //List<User> userList = Arrays.asList(user1, user2);
-
-        // Mock repository behavior
-        //when(userRepository.getUsers()).thenReturn(new ArrayList<>(userList));
-
         List<User> users = userService.getUsers();
 
         assertEquals(2, users.size(), "Expected two users in the list.");

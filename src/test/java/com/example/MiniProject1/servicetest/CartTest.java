@@ -296,4 +296,53 @@ class CartTest {
     }
 
 
+    @Test
+    void testGetCartsWhenNoCartsExist() {
+        List<Cart> carts = cartService.getCarts();
+
+        assertTrue(carts.isEmpty(), "Expected an empty list when no users exist.");
+
+
+    }
+
+    @Test
+    void testGetCartsWithMultipleCarts() {
+        // Create sample carts
+        Cart cart1 = new Cart();
+        Cart cart2 = new Cart();
+        cart1.setId(UUID.randomUUID());
+        cart2.setId(UUID.randomUUID());
+        cart1.setUserId(UUID.randomUUID());
+        cart2.setUserId(UUID.randomUUID());
+
+        cartService.addCart(cart1);
+        cartService.addCart(cart2);
+
+        // Act
+        List<Cart> carts = cartService.getCarts();
+
+        // Assert
+        assertEquals(2, carts.size(), "Expected two carts in the list.");
+        assertTrue(carts.contains(cart1) && carts.contains(cart2), "Both carts should be in the list.");
+    }
+
+    //This test ensures that multiple carts can exist for the same user but with different cart IDs.
+    @Test
+    void testGetCartsWithSameUserId() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        Cart cart1 = new Cart(UUID.randomUUID(), userId, new ArrayList<>()); // Unique cart ID, same user
+        Cart cart2 = new Cart(UUID.randomUUID(), userId, new ArrayList<>()); // Another unique cart ID, same user
+
+        cartService.addCart(cart1);
+        cartService.addCart(cart2);
+
+        // Act
+        List<Cart> carts = cartService.getCarts();
+
+        // Assert
+        long count = carts.stream().filter(cart -> cart.getUserId().equals(userId)).count();
+        assertEquals(2, count, "A user should be able to have multiple carts with different IDs");
+    }
+
 }
