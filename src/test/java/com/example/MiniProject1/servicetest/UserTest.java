@@ -359,41 +359,45 @@ class UserTest
 
 
 
-//    @Test
-//    void testGetUsersImmutability() {
-//        // Create sample user
-//        User user1 = new User();
-//
-//
-//        List<User> userList = new ArrayList<>();
-//        userList.add(user1);
-//
-//        // Mock repository behavior
-//        when(userRepository.getUsers()).thenReturn(new ArrayList<>(userList));
-//
-//        List<User> users = userService.getUsers();
-//
-//        // Try modifying the returned list
-//        users.add(new User(2, "David"));
-//
-//        // Fetch users again to verify the repository remains unchanged
-//        List<User> usersAfterModification = userService.getUsers();
-//
-//        assertEquals(1, usersAfterModification.size(), "Modifying the returned list should not affect the repository.");
-//        assertEquals("Charlie", usersAfterModification.get(0).getName());
-//    }
 
 
 
 
 
 
+    @Test
+    void testGetUsersWithExistingId() {
+        // Create sample users
+        User user1 = new User();
+        UUID userId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+        user1.setName("Test User");
+        user1.setId(userId);
+
+        userService.addUser(user1);
+
+        User user = userService.getUserById(userId);
+
+        assertEquals("Test User", user.getName(), "Expected user name in the list.");
+    }
+    @Test
+    void testGetUsersWithNonExistingId() {
+        // Create sample users
+        UUID userId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+
+        User user = userService.getUserById(userId);
+
+        assertNull(user, "Expected null as user with given id doesn't exist.");
+    }
 
 
+    @Test
+    void testGetUsersWithNullId() {
 
 
+        User user = userService.getUserById(null);
 
-
+        assertNull(user, "Expected an Id, cannot be null.");
+    }
 
 }
 
