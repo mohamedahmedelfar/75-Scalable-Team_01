@@ -266,18 +266,18 @@ class UserTest
 
 
     @Test
-    void testAddUserWithInvalidNameService() throws Exception {
+    void testAddUserWithNullIdService() throws Exception {
         User testUser = new User();
-        testUser.setId(UUID.randomUUID());
+        testUser.setId(null);
         testUser.setName("Test 2User");
 
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             userService.addUser(testUser);
         });
-
-        assertEquals("User name cannot contain numbers", exception.getMessage(),
+        assertEquals("User id cannot be null", exception.getMessage(),
                 "Expected exception message does not match");
+
     }
     @Test
     void testAddUserWithNoNameService() throws Exception {
@@ -398,6 +398,53 @@ class UserTest
 
         assertNull(user, "Expected an Id, cannot be null.");
     }
+
+
+    @Test
+    void testDeleteExistingUser() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        user.setName("Test User");
+        userService.addUser(user);
+
+        // Act
+        userService.deleteUserById(userId);
+
+        System.out.println("User after deletion: " + userService.getUserById(userId));
+
+        // Assert
+        assertNull(userService.getUserById(userId), "User should be deleted and not found");
+    }
+
+    @Test
+    void testDeleteNonExistingUser() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+
+        // Act
+        userService.deleteUserById(userId);
+
+        // Assert
+        assertNull(userService.getUserById(userId), "User should be deleted and not found");
+    }
+
+    @Test
+    void testDeleteUserWithNullId() {
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.deleteUserById(null);
+        });
+
+        assertEquals("Cannot search for null Id", exception.getMessage(),
+                "Expected an IllegalArgumentException for null user ID");
+    }
+
+
+
+
+
 
 }
 

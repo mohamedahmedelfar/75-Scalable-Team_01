@@ -36,10 +36,13 @@ public class UserService extends MainService<User> {
         if (user.getName() == null) {
             throw new IllegalArgumentException("User name cannot be null");
         }
-
-        if (user.getName().matches(".*\\d.*")) {
-            throw new IllegalArgumentException("User name cannot contain numbers");
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User id cannot be null");
         }
+
+//        if (user.getName().matches(".*\\d.*")) {
+//            throw new IllegalArgumentException("User name cannot contain numbers");
+//        }
         return userRepository.addUser(user);
     } 
 
@@ -87,7 +90,11 @@ public class UserService extends MainService<User> {
     }
 
     public void deleteUserById(UUID userId){
-        userRepository.deleteUserById(userId);
+        if (userId == null) {
+            throw new IllegalArgumentException("Cannot search for null Id");
+
+        }
+         userRepository.deleteUserById(userId);
     }
 
 

@@ -110,8 +110,8 @@ public class UserRepository extends MainRepository<User>{
         if(!userFound) {
             return;
         }
-        users.removeIf(user -> user.getId().equals(userId));
-        //saveAll(users);
+        users.remove(getUserById(userId));
+        saveAll(users);
     }
 
 }
